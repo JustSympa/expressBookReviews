@@ -19,39 +19,63 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  return res.status(200).json(books);
+  new Promise((resolve, reject) => {
+    resolve(books);
+  }).then((books) => {
+    return res.status(200).json(books);
+  }).catch((error) => {
+    return res.status(500).json({message: "Error fetching books"});
+  });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
-  if (books[isbn]) {
-    return res.status(200).json(books[isbn]);
-  } else {
-    return res.status(404).json({message: "Book not found"});
-  }
+  new Promise((resolve, reject) => {
+    if (books[isbn]) {
+      resolve(books[isbn]);
+    } else {
+      reject("Book not found");
+    }
+  }).then((book) => {
+    return res.status(200).json(book);
+  }).catch((error) => {
+    return res.status(404).json({message: error});
+  });
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
-  const filteredBooks = Object.values(books).filter(book => book.author.toLowerCase() === author.toLowerCase());
-  if (filteredBooks.length > 0) {
-    return res.status(200).json(filteredBooks);
-  } else {
-    return res.status(404).json({message: "No books found by this author"});
-  }
+  new Promise((resolve, reject) => {
+    const filteredBooks = Object.values(books).filter(book => book.author.toLowerCase() === author.toLowerCase());
+    if (filteredBooks.length > 0) {
+      resolve(filteredBooks);
+    } else {
+      reject("No books found by this author");
+    }
+  }).then((books) => {
+    return res.status(200).json(books);
+  }).catch((error) => {
+    return res.status(404).json({message: error});
+  });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   const title = req.params.title;
-  const filteredBooks = Object.values(books).filter(book => book.title.toLowerCase() === title.toLowerCase());
-  if (filteredBooks.length > 0) {
-    return res.status(200).json(filteredBooks);
-  } else {
-    return res.status(404).json({message: "No books found with this title"});
-  }
+  new Promise((resolve, reject) => {
+    const filteredBooks = Object.values(books).filter(book => book.title.toLowerCase() === title.toLowerCase());
+    if (filteredBooks.length > 0) {
+      resolve(filteredBooks);
+    } else {
+      reject("No books found with this title");
+    }
+  }).then((books) => {
+    return res.status(200).json(books);
+  }).catch((error) => {
+    return res.status(404).json({message: error});
+  });
 });
 
 //  Get book review
